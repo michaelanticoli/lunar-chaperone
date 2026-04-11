@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    overflow-x: hidden;
+    @apply antialiased;
+  }
+  
+  /* Custom Scrollbar for the Archive feel */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F4F1EA;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C4A77D;
+    border-radius: 10px;
+  }
+
+  .journal-line {
+    @apply w-full bg-transparent border-b-[1px] border-ink/10 text-ink font-serif text-lg py-2 px-0 focus:outline-none focus:border-gold transition-all duration-500 placeholder:opacity-20;
+  }
+}
+
+@layer utilities {
+  @media print {
+    body { background-color: white !important; color: black !important; }
+    .print-hidden { display: none !important; }
+    main { background: white !important; }
+    section { 
+      page-break-after: always; 
+      min-height: 0 !important; 
+      padding-top: 2rem !important; 
+      padding-bottom: 2rem !important;
+      border: none !important;
+    }
+    .journal-line { border-bottom-color: #ccc !important; }
+    .bg-ink { background: transparent !important; border: 1px solid black !important; color: black !important; }
+    .text-paper { color: black !important; }
+    .text-gold { color: #99743D !important; }
+  }
+}
