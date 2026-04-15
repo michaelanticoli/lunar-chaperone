@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output (built inside Docker, not copied from host)
+dist/
+
+# Dev / OS cruft
+.DS_Store
+*.log
+npm-debug.log*
+
+# Git
+.git
+.gitignore
+
+# Editor configs
+.vscode/
+.idea/
+
+# Env files (never bake secrets into the image)
+.env
+.env.*
+
+# CI
+.github/
