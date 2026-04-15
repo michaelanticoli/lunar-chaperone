@@ -1,41 +1,49 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { volumes } from '../data/volumes';
-import { Label, Title, Subtitle, Heading, Body, List } from '../components/ui/Typography';
+import { getVolumeByFortnight } from '../data/volumes';
+import { Label, Title, Subtitle, Heading, Body } from '../components/ui/Typography';
 import { Section, Divider, JournalInput, JournalArea } from '../components/ui/Layout';
 import { MoonPhase, TriangleSymbol, RadiatingCircles } from '../components/graphics/Symbols';
 import { SynthesisRitual } from '../components/ui/SynthesisRitual';
+import { FortnightNav } from '../components/ui/FortnightNav';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
-const { FiCompass, FiActivity, FiAnchor, FiBookOpen, FiWind, FiSun } = FiIcons;
+const { FiCompass, FiActivity, FiAnchor, FiSun } = FiIcons;
 
 export default function WorkbookPage() {
-  const { volumeId } = useParams();
-  const vol = volumes.find(v => v.id === volumeId);
+  const { fortnight } = useParams();
+  const vol = getVolumeByFortnight(fortnight);
 
-  if (!vol) return <Navigate to="/" />;
+  if (!vol) return <Navigate to="/cycle" replace />;
 
-  const isWaning = vol.type.includes('Waning');
+  const isWaning = vol.phase === 'waning';
   const [source, destination] = vol.somatic.split('→').map(t => t.trim());
 
   return (
     <main className="w-full bg-paper min-h-screen selection:bg-gold/30">
-      
+
+      {/* ── Top fortnight nav ─────────────────────────────────────────────────── */}
+      <div className="pt-20">
+        <FortnightNav vol={vol} />
+      </div>
+
       {/* 1. ARCHIVAL HEADER (The Cover) */}
       <Section className="text-center items-center min-h-[90vh]">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }} 
-          animate={{ opacity: 1, y: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "circOut" }}
           className="relative"
         >
           <div className="absolute -top-32 left-1/2 -translate-x-1/2 opacity-5 pointer-events-none">
             <RadiatingCircles className="w-96 h-96" />
           </div>
-          
-          <Label className="mb-12 tracking-[0.4em] opacity-40">Sequential Archive — Vol. {vol.sequence.toString().padStart(2, '0')}</Label>
+
+          <Label className="mb-12 tracking-[0.4em] opacity-40">
+            Fortnight {String(vol.fortnight).padStart(2, '0')} of 26
+          </Label>
           <Title className="mb-8 leading-[1.1] text-4xl md:text-7xl max-w-5xl mx-auto font-light">
             {vol.title.split(' ').map((word, i) => (
               <span key={i} className={i % 2 === 1 ? 'italic font-serif block md:inline' : ''}>
@@ -43,23 +51,23 @@ export default function WorkbookPage() {
               </span>
             ))}
           </Title>
-          
+
           <div className="flex items-center justify-center space-x-12 my-20 text-ink">
             <MoonPhase phase={isWaning ? 'full' : 'new'} className="w-16 h-16 opacity-20" />
             <div className="h-px w-64 bg-ink/10 relative overflow-hidden">
-               <motion.div 
+              <motion.div
                 className="absolute inset-0 bg-gold"
                 initial={{ x: '-100%' }}
                 animate={{ x: '100%' }}
                 transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-               />
+              />
             </div>
             <MoonPhase phase={isWaning ? 'new' : 'full'} className="w-16 h-16 text-gold" />
           </div>
 
           <Subtitle className="mb-6 text-3xl md:text-4xl">{vol.signs}</Subtitle>
           <div className="flex flex-col items-center gap-2">
-            <Label className="text-gold">{vol.series}</Label>
+            <Label className="text-gold capitalize">{vol.phase}</Label>
             <Label className="text-[10px] opacity-30">{vol.mechanics.start} Phase Begins</Label>
           </div>
         </motion.div>
@@ -76,8 +84,11 @@ export default function WorkbookPage() {
               </div>
               <Heading className="text-3xl lowercase italic font-serif tracking-normal">{vol.somatic}</Heading>
               <Body className="text-lg opacity-70 leading-relaxed">
-                This volume navigates the bio-energetic channel between <span className="text-ink font-semibold">{source}</span> and <span className="text-ink font-semibold">{destination}</span>. 
-                We are mapping how {vol.signs.split('→')[0]}'s essential nature informs the {vol.signs.split('→')[1]} expression.
+                This fortnight navigates the bio-energetic channel between{' '}
+                <span className="text-ink font-semibold">{source}</span> and{' '}
+                <span className="text-ink font-semibold">{destination}</span>.{' '}
+                We are mapping how {vol.signs.split('→')[0].trim()}'s essential nature informs the{' '}
+                {vol.signs.split('→')[1].trim()} expression.
               </Body>
             </div>
 
@@ -85,7 +96,9 @@ export default function WorkbookPage() {
               <Label className="mb-6 opacity-40">Seasonal Intelligence</Label>
               <Heading className="text-sm mb-4">{vol.seasonal}</Heading>
               <Body className="text-base italic text-ink-light">
-                "The environment reflects the internal landscape. As the light {isWaning ? 'recedes' : 'returns'}, the nervous system seeks {isWaning ? 'containment' : 'expansion'}."
+                "The environment reflects the internal landscape. As the light{' '}
+                {isWaning ? 'recedes' : 'returns'}, the nervous system seeks{' '}
+                {isWaning ? 'containment' : 'expansion'}."
               </Body>
             </div>
           </div>
@@ -97,10 +110,10 @@ export default function WorkbookPage() {
                   <RadiatingCircles className="w-full h-full scale-150" />
                 </div>
                 <div className="relative text-center p-12">
-                   <Label className="text-gold mb-8">Volume Intent</Label>
-                   <Title className="text-2xl md:text-3xl normal-case font-serif italic leading-snug">
-                     {vol.description}
-                   </Title>
+                  <Label className="text-gold mb-8">Volume Intent</Label>
+                  <Title className="text-2xl md:text-3xl normal-case font-serif italic leading-snug">
+                    {vol.description}
+                  </Title>
                 </div>
               </div>
               <div className="flex justify-between items-center opacity-30">
@@ -116,11 +129,11 @@ export default function WorkbookPage() {
       <Section>
         <div className="max-w-3xl mx-auto space-y-32">
           <header className="text-center space-y-4">
-             <div className="flex justify-center mb-8">
-               <SafeIcon icon={FiActivity} className="text-gold text-3xl" />
-             </div>
-             <Heading>The Fortnight Lab</Heading>
-             <Body className="text-ink-muted italic">Process the transit through the body-mind complex.</Body>
+            <div className="flex justify-center mb-8">
+              <SafeIcon icon={FiActivity} className="text-gold text-3xl" />
+            </div>
+            <Heading>The Fortnight Lab</Heading>
+            <Body className="text-ink-muted italic">Process the transit through the body-mind complex.</Body>
           </header>
 
           <div className="space-y-24">
@@ -138,7 +151,9 @@ export default function WorkbookPage() {
                 </div>
                 <div>
                   <Label className="mb-4 text-gold">Relational Field</Label>
-                  <Body className="text-sm italic opacity-60 mb-8">Identify one agreement that feels "heavy" in the current {vol.signs.split('→')[0]} light.</Body>
+                  <Body className="text-sm italic opacity-60 mb-8">
+                    Identify one agreement that feels "heavy" in the current {vol.signs.split('→')[0].trim()} light.
+                  </Body>
                   <JournalArea id="audit_2" volumeId={vol.id} lines={4} />
                 </div>
               </div>
@@ -183,7 +198,7 @@ export default function WorkbookPage() {
                   "The body is the most honest archive we possess. To move from {source} to {destination} is to re-wire the internal map."
                 </Body>
               </div>
-              
+
               <div className="space-y-12 border-l border-gold/30 pl-12">
                 <div className="space-y-2">
                   <Label className="text-gold text-[10px]">Step 01</Label>
@@ -195,7 +210,7 @@ export default function WorkbookPage() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-gold text-[10px]">Step 03</Label>
-                  <Body className="text-paper print:text-ink">Exhale sharply through the mouth, releasing the {vol.signs.split('→')[0]} tension.</Body>
+                  <Body className="text-paper print:text-ink">Exhale sharply through the mouth, releasing the {vol.signs.split('→')[0].trim()} tension.</Body>
                 </div>
               </div>
             </div>
@@ -223,33 +238,34 @@ export default function WorkbookPage() {
       </Section>
 
       {/* 6. ARCHIVAL CLOSING */}
-      <Section className="text-center items-center pb-64">
+      <Section className="text-center items-center pb-32">
         <motion.div
-           initial={{ opacity: 0 }}
-           whileInView={{ opacity: 1 }}
-           className="space-y-24 w-full"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          className="space-y-24 w-full"
         >
           <div className="space-y-8">
             <SafeIcon icon={FiSun} className="w-12 h-12 text-gold mx-auto" />
             <Label className="opacity-40 tracking-[0.5em]">The Integration Point</Label>
             <Title className="text-2xl md:text-4xl normal-case italic text-ink-light max-w-3xl mx-auto leading-relaxed">
-              "I have observed the shift from {source} to {destination}. I carry the clarity of {vol.signs.split('→')[1]} into the next ingress."
+              "I have observed the shift from {source} to {destination}. I carry the clarity of{' '}
+              {vol.signs.split('→')[1].trim()} into the next ingress."
             </Title>
           </div>
 
           <div className="grid md:grid-cols-2 gap-16 max-w-2xl mx-auto border-t border-ink/5 pt-16">
-             <div className="text-left space-y-4">
-                <Label className="text-[10px] opacity-40">Archival Witness</Label>
-                <JournalInput id="final_sign" volumeId={vol.id} placeholder="Your Signature" />
-             </div>
-             <div className="text-left space-y-4">
-                <Label className="text-[10px] opacity-40">Temporal Marker</Label>
-                <JournalInput id="final_date" volumeId={vol.id} placeholder="Current Calibration" />
-             </div>
+            <div className="text-left space-y-4">
+              <Label className="text-[10px] opacity-40">Archival Witness</Label>
+              <JournalInput id="final_sign" volumeId={vol.id} placeholder="Your Signature" />
+            </div>
+            <div className="text-left space-y-4">
+              <Label className="text-[10px] opacity-40">Temporal Marker</Label>
+              <JournalInput id="final_date" volumeId={vol.id} placeholder="Current Calibration" />
+            </div>
           </div>
-          
-          <div className="pt-24 opacity-20 hover:opacity-100 transition-opacity">
-            <button 
+
+          <div className="pt-12 opacity-20 hover:opacity-100 transition-opacity">
+            <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="group flex flex-col items-center gap-4"
             >
@@ -261,6 +277,9 @@ export default function WorkbookPage() {
           </div>
         </motion.div>
       </Section>
+
+      {/* ── Bottom fortnight nav ──────────────────────────────────────────────── */}
+      <FortnightNav vol={vol} />
     </main>
   );
 }
