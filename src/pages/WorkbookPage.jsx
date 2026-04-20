@@ -62,11 +62,19 @@ function inferMetaphor(fromElement, toElement) {
   return 'Sensation converts into structure through attention.';
 }
 
-function SidebarLink({ href, icon, children, active = false }) {
+function SidebarLink({ targetId, icon, children, active = false }) {
+  const handleClick = () => {
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
-    <a
-      href={href}
-      className={`flex items-center gap-3 px-5 py-3 text-[11px] uppercase tracking-[0.18em] transition-colors border-l ${
+    <button
+      type="button"
+      onClick={handleClick}
+      className={`w-full flex items-center gap-3 px-5 py-3 text-[11px] uppercase tracking-[0.18em] transition-colors border-l text-left ${
         active
           ? 'bg-paper-dark/40 text-gold border-gold'
           : 'text-ink-light border-transparent hover:bg-paper-dark/30 hover:text-gold'
@@ -74,7 +82,7 @@ function SidebarLink({ href, icon, children, active = false }) {
     >
       <SafeIcon icon={icon} className="text-sm" />
       <span>{children}</span>
-    </a>
+    </button>
   );
 }
 
@@ -180,12 +188,12 @@ export default function WorkbookPage() {
 
         <nav className="flex-1 overflow-y-auto py-4">
           <p className="px-6 mb-2 text-[9px] uppercase tracking-[0.3em] text-ink-light">Navigation</p>
-          <SidebarLink href="#overview" icon={FiHome} active>Overview</SidebarLink>
-          <SidebarLink href="#context" icon={FiCompass}>Context Framing</SidebarLink>
-          <SidebarLink href="#mapping" icon={FiLayers}>Energy Mapping</SidebarLink>
-          <SidebarLink href="#protocols" icon={FiActivity}>Practices &amp; Protocols</SidebarLink>
-          <SidebarLink href="#tracking" icon={FiBookOpen}>Practice Logs</SidebarLink>
-          <SidebarLink href="#synthesis" icon={FiFeather}>Integration</SidebarLink>
+          <SidebarLink targetId="overview" icon={FiHome} active>Overview</SidebarLink>
+          <SidebarLink targetId="context" icon={FiCompass}>Context Framing</SidebarLink>
+          <SidebarLink targetId="mapping" icon={FiLayers}>Energy Mapping</SidebarLink>
+          <SidebarLink targetId="protocols" icon={FiActivity}>Practices &amp; Protocols</SidebarLink>
+          <SidebarLink targetId="tracking" icon={FiBookOpen}>Practice Logs</SidebarLink>
+          <SidebarLink targetId="synthesis" icon={FiFeather}>Integration</SidebarLink>
 
           <div className="mt-5 mx-4 border-t border-ink/10 pt-4">
             <p className="px-2 mb-2 text-[9px] uppercase tracking-[0.3em] text-ink-light">Cycle Arc</p>
@@ -305,59 +313,11 @@ export default function WorkbookPage() {
               <MoonPhase phase={isWaning ? 'full' : 'new'} className="w-8 h-8 text-ink" />
             </div>
 
-            <ProtocolArticle
-              number={1}
-              label="Protocol I"
-              title="Axis Breathing"
-              subtitle={`${sourceBody} attunement · measured breath descent`}
-              description={`A paced breath protocol for locating the ${fromSign} pattern in the body without amplifying it. The goal is accurate contact, not performance.`}
-              details={[
-                { title: 'Inhale', value: '4', subtext: 'counts' },
-                { title: 'Hold', value: '4', subtext: 'counts' },
-                { title: 'Exhale', value: '8', subtext: 'counts' },
-                { title: 'Target', value: sourceBody, subtext: 'entry point' },
-              ]}
-              closing={`Direct awareness toward the ${sourceBody.toLowerCase()}. On the exhale, imagine the charge moving toward ${destinationBody.toLowerCase()} with less force and more precision.`}
-              image="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=900&q=80"
-              metaLeft="Duration: 11 min"
-              metaRight="Seated, spine vertical"
-            />
+            <ProtocolArticle number={1} label="Protocol I" title="Axis Breathing" subtitle={`${sourceBody} attunement · measured breath descent`} description={`A paced breath protocol for locating the ${fromSign} pattern in the body without amplifying it. The goal is accurate contact, not performance.`} details={[{ title: 'Inhale', value: '4', subtext: 'counts' }, { title: 'Hold', value: '4', subtext: 'counts' }, { title: 'Exhale', value: '8', subtext: 'counts' }, { title: 'Target', value: sourceBody, subtext: 'entry point' }]} closing={`Direct awareness toward the ${sourceBody.toLowerCase()}. On the exhale, imagine the charge moving toward ${destinationBody.toLowerCase()} with less force and more precision.`} image="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=900&q=80" metaLeft="Duration: 11 min" metaRight="Seated, spine vertical" />
 
-            <ProtocolArticle
-              number={2}
-              label="Protocol II"
-              title="Voice and Boundary Toning"
-              subtitle={`${toSign} language activation · vocal resonance`}
-              description={`Sustained sounding, phrasing, or low-volume vocalization helps translate internal sensation into communicable structure. This is useful when the cycle is asking for clearer agreements.`}
-              details={[
-                { title: 'Tone', value: 'VVVV / HUM', subtext: 'resonant exhale' },
-                { title: 'Duration', value: '14 min', subtext: 'sustained rounds' },
-                { title: 'Function', value: 'Language', subtext: 'boundary support' },
-              ]}
-              closing={`Use the exhale to move from feeling into statement. Try: “I feel… I need… I will… I will not…” and notice where the body tightens or releases.`}
-              image="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=900&q=80"
-              metaLeft="Vocal resonance"
-              metaRight="Standing or supine"
-              reverse
-            />
+            <ProtocolArticle number={2} label="Protocol II" title="Voice and Boundary Toning" subtitle={`${toSign} language activation · vocal resonance`} description={`Sustained sounding, phrasing, or low-volume vocalization helps translate internal sensation into communicable structure. This is useful when the cycle is asking for clearer agreements.`} details={[{ title: 'Tone', value: 'VVVV / HUM', subtext: 'resonant exhale' }, { title: 'Duration', value: '14 min', subtext: 'sustained rounds' }, { title: 'Function', value: 'Language', subtext: 'boundary support' }]} closing={`Use the exhale to move from feeling into statement. Try: “I feel… I need… I will… I will not…” and notice where the body tightens or releases.`} image="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=900&q=80" metaLeft="Vocal resonance" metaRight="Standing or supine" reverse />
 
-            <ProtocolArticle
-              number={3}
-              label="Protocol III"
-              title="Descent and Structural Release"
-              subtitle={`${destinationBody} grounding · behavioral integration`}
-              description={`This sequence completes the translation by bringing insight down into actual structure: pacing, posture, schedule, agreements, and embodied follow-through.`}
-              details={[
-                { title: 'Week I', value: 'Witness', subtext: 'pattern inventory' },
-                { title: 'Week II', value: 'Apply', subtext: 'behavioral shift' },
-                { title: 'Method', value: 'Slow', subtext: 'no forcing' },
-                { title: 'Outcome', value: 'Integration', subtext: 'not performance' },
-              ]}
-              closing={`Do not force catharsis. Let the body reveal the level of change it can actually sustain. Durable integration beats dramatic insight every time.`}
-              image="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=900&q=80"
-              metaLeft="Duration: 19 min"
-              metaRight="Floor, chair, or wall support"
-            />
+            <ProtocolArticle number={3} label="Protocol III" title="Descent and Structural Release" subtitle={`${destinationBody} grounding · behavioral integration`} description={`This sequence completes the translation by bringing insight down into actual structure: pacing, posture, schedule, agreements, and embodied follow-through.`} details={[{ title: 'Week I', value: 'Witness', subtext: 'pattern inventory' }, { title: 'Week II', value: 'Apply', subtext: 'behavioral shift' }, { title: 'Method', value: 'Slow', subtext: 'no forcing' }, { title: 'Outcome', value: 'Integration', subtext: 'not performance' }]} closing={`Do not force catharsis. Let the body reveal the level of change it can actually sustain. Durable integration beats dramatic insight every time.`} image="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=900&q=80" metaLeft="Duration: 19 min" metaRight="Floor, chair, or wall support" />
           </section>
 
           <section id="tracking" className="mb-16 scroll-mt-28">
@@ -371,22 +331,10 @@ export default function WorkbookPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-              <LogCard label="Breath Rate" icon={FiWind}>
-                <JournalInput id="log_breath" volumeId={vol.id} placeholder="— BPM" />
-                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Breaths / minute</p>
-              </LogCard>
-              <LogCard label="Heart Rate" icon={FiHeart}>
-                <JournalInput id="log_heart" volumeId={vol.id} placeholder="— BPM" />
-                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Beats / minute</p>
-              </LogCard>
-              <LogCard label="Primary State" icon={FiCompass}>
-                <JournalInput id="log_state" volumeId={vol.id} placeholder="Dormant / resonant / clear" />
-                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Autonomic impression</p>
-              </LogCard>
-              <LogCard label="Somatic Load" icon={FiLayers}>
-                <JournalInput id="log_load" volumeId={vol.id} placeholder="Light / moderate / saturated" />
-                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Subjective load index</p>
-              </LogCard>
+              <LogCard label="Breath Rate" icon={FiWind}><JournalInput id="log_breath" volumeId={vol.id} placeholder="— BPM" /><p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Breaths / minute</p></LogCard>
+              <LogCard label="Heart Rate" icon={FiHeart}><JournalInput id="log_heart" volumeId={vol.id} placeholder="— BPM" /><p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Beats / minute</p></LogCard>
+              <LogCard label="Primary State" icon={FiCompass}><JournalInput id="log_state" volumeId={vol.id} placeholder="Dormant / resonant / clear" /><p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Autonomic impression</p></LogCard>
+              <LogCard label="Somatic Load" icon={FiLayers}><JournalInput id="log_load" volumeId={vol.id} placeholder="Light / moderate / saturated" /><p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Subjective load index</p></LogCard>
             </div>
 
             <div className="border border-ink/10 bg-white/70 p-6">
@@ -400,10 +348,7 @@ export default function WorkbookPage() {
               <JournalArea id="phenomenology_notes" volumeId={vol.id} lines={8} />
               <div className="flex items-center justify-between mt-4">
                 <p className="text-[8px] uppercase tracking-[0.2em] text-ink-light opacity-50">Ref: LC-{String(vol.fortnight).padStart(2, '0')}-TRACK</p>
-                <button className="text-[9px] uppercase tracking-[0.25em] text-gold border border-gold px-4 py-2 hover:bg-gold hover:text-paper transition-colors flex items-center gap-2">
-                  <SafeIcon icon={FiSave} className="text-xs" />
-                  Commit to Archive
-                </button>
+                <button className="text-[9px] uppercase tracking-[0.25em] text-gold border border-gold px-4 py-2 hover:bg-gold hover:text-paper transition-colors flex items-center gap-2"><SafeIcon icon={FiSave} className="text-xs" />Commit to Archive</button>
               </div>
             </div>
           </section>
@@ -418,14 +363,8 @@ export default function WorkbookPage() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div className="border border-ink/10 bg-white/70 p-6 space-y-4">
-                <Body className="text-base">What changed across these two weeks once the pattern was named and practiced against?</Body>
-                <JournalArea id="integration_change" volumeId={vol.id} lines={6} />
-              </div>
-              <div className="border border-gold/15 bg-white/70 p-6 space-y-4">
-                <Body className="text-base">What is the clearest measurable sign to check again in three months?</Body>
-                <JournalArea id="integration_marker" volumeId={vol.id} lines={6} />
-              </div>
+              <div className="border border-ink/10 bg-white/70 p-6 space-y-4"><Body className="text-base">What changed across these two weeks once the pattern was named and practiced against?</Body><JournalArea id="integration_change" volumeId={vol.id} lines={6} /></div>
+              <div className="border border-gold/15 bg-white/70 p-6 space-y-4"><Body className="text-base">What is the clearest measurable sign to check again in three months?</Body><JournalArea id="integration_marker" volumeId={vol.id} lines={6} /></div>
             </div>
 
             <div className="relative z-10 max-w-4xl mx-auto bg-white/70 border border-gold/10 p-8 md:p-12 shadow-sm">
