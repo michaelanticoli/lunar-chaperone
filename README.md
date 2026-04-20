@@ -104,6 +104,19 @@ Docker (and any load balancer / orchestrator) uses this automatically.
 
 ---
 
+## Deploying to Render
+
+This repository is configured for **Render** via `render.yaml`.
+
+1. Push this branch to GitHub.
+2. In Render, create a new **Blueprint** instance from the repository.
+3. Render will detect `render.yaml`, build the existing `Dockerfile`, and expose the app.
+4. Render uses `GET /health` for health checks automatically.
+
+If you prefer to configure the service manually, connect the repo, choose **Docker** as the runtime, and keep the default start command from the image.
+
+---
+
 ## Deploying to a generic Docker host
 
 Any platform that runs Docker containers works:
@@ -120,7 +133,6 @@ Any platform that runs Docker containers works:
 
 Platform-specific shortcuts:
 - **Fly.io**: `fly launch` (auto-detects Dockerfile)
-- **Render**: connect repo, choose "Docker" as runtime
+- **Render**: connect the repo as a Blueprint to use `render.yaml`
 - **Railway**: connect repo — Railway detects the Dockerfile automatically
 - **DigitalOcean App Platform**: choose "Docker" source
-
