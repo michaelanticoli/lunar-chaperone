@@ -18,8 +18,6 @@ export function FortnightNav({ vol }) {
   return (
     <nav className="w-full py-6 px-6 md:px-12 border-t border-b border-ink/8 bg-paper/80 backdrop-blur-sm print:hidden">
       <div className="max-w-6xl mx-auto flex items-center gap-4">
-
-        {/* Previous */}
         <div className="flex-1 flex justify-start">
           {prev ? (
             <Link
@@ -30,7 +28,7 @@ export function FortnightNav({ vol }) {
               <div className="hidden sm:block">
                 <div className="flex items-center gap-1 mb-0.5">
                   <span className="text-xs">{PHASE_GLYPH[prev.phase] ?? '○'}</span>
-                  <Label className="text-[10px] opacity-40">Fortnight {prev.fortnight}</Label>
+                  <Label className="text-[10px] opacity-40">Workbook {prev.fortnight}</Label>
                 </div>
                 <p className="text-sm font-serif italic leading-tight line-clamp-1">{prev.title}</p>
               </div>
@@ -42,12 +40,11 @@ export function FortnightNav({ vol }) {
           )}
         </div>
 
-        {/* Center: position + progress bar */}
         <div className="flex flex-col items-center gap-2 min-w-[160px]">
           <div className="flex items-center gap-2">
             <span className="text-sm">{PHASE_GLYPH[vol.phase] ?? '○'}</span>
             <Label className="text-[11px] tracking-widest">
-              Fortnight {vol.fortnight} of 26
+              Workbook {vol.fortnight} of 26
             </Label>
           </div>
           <div className="w-full h-px bg-ink/10 relative overflow-hidden rounded-full">
@@ -58,7 +55,6 @@ export function FortnightNav({ vol }) {
           </div>
         </div>
 
-        {/* Next */}
         <div className="flex-1 flex justify-end">
           {next ? (
             <Link
@@ -67,7 +63,7 @@ export function FortnightNav({ vol }) {
             >
               <div className="hidden sm:block">
                 <div className="flex items-center justify-end gap-1 mb-0.5">
-                  <Label className="text-[10px] opacity-40">Fortnight {next.fortnight}</Label>
+                  <Label className="text-[10px] opacity-40">Workbook {next.fortnight}</Label>
                   <span className="text-xs">{PHASE_GLYPH[next.phase] ?? '○'}</span>
                 </div>
                 <p className="text-sm font-serif italic leading-tight line-clamp-1">{next.title}</p>
@@ -80,7 +76,6 @@ export function FortnightNav({ vol }) {
             </span>
           )}
         </div>
-
       </div>
     </nav>
   );
