@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: lunar-chaperone
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
