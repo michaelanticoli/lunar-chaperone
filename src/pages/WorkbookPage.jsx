@@ -1,24 +1,29 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { getVolumeByFortnight } from '../data/volumes';
-import { Label, Title, Subtitle, Heading, Body } from '../components/ui/Typography';
-import { Section, Divider, JournalInput, JournalArea } from '../components/ui/Layout';
-import { MoonPhase, TriangleSymbol, RadiatingCircles } from '../components/graphics/Symbols';
+import { Label, Title, Subtitle, Heading, Body, List } from '../components/ui/Typography';
+import { JournalInput, JournalArea } from '../components/ui/Layout';
+import { MoonPhase, RadiatingCircles, TriangleSymbol } from '../components/graphics/Symbols';
 import { SynthesisRitual } from '../components/ui/SynthesisRitual';
 import { FortnightNav } from '../components/ui/FortnightNav';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 
 const {
+  FiHome,
   FiCompass,
   FiActivity,
-  FiAnchor,
-  FiSun,
-  FiWind,
-  FiDroplet,
-  FiBookOpen,
   FiFeather,
+  FiBookOpen,
+  FiPlayCircle,
+  FiSettings,
+  FiHelpCircle,
+  FiClock,
+  FiMapPin,
+  FiHeart,
+  FiWind,
+  FiEdit3,
+  FiSave,
   FiLayers,
   FiCheckCircle,
 } = FiIcons;
@@ -46,19 +51,107 @@ function inferBodyRegion(text = '') {
 }
 
 function inferMetaphor(fromElement, toElement) {
-  if (fromElement === 'Water' && toElement === 'Air') return 'Evaporation, mist, breath, translation';
-  if (fromElement === 'Air' && toElement === 'Water') return 'Condensation, feeling, softening, absorption';
-  if (fromElement === 'Fire' && toElement === 'Water') return 'Tempering, cooling, emotional depth';
-  if (fromElement === 'Water' && toElement === 'Fire') return 'Ignition, steam, emotional activation';
-  if (fromElement === 'Earth' && toElement === 'Air') return 'Loosening, articulation, mobility';
-  if (fromElement === 'Air' && toElement === 'Earth') return 'Grounding, embodiment, making it real';
-  if (fromElement === 'Fire' && toElement === 'Earth') return 'Containment, craft, disciplined expression';
-  if (fromElement === 'Earth' && toElement === 'Fire') return 'Animation, vitality, momentum';
-  if (fromElement === 'Fire' && toElement === 'Air') return 'Spark becoming signal';
-  if (fromElement === 'Air' && toElement === 'Fire') return 'Idea becoming action';
-  if (fromElement === 'Earth' && toElement === 'Water') return 'Softening structure into feeling';
-  if (fromElement === 'Water' && toElement === 'Earth') return 'Settling insight into form';
-  return 'Transition, translation, embodiment';
+  if (fromElement === 'Water' && toElement === 'Air') return 'Emotion transitions from immersion to articulation.';
+  if (fromElement === 'Air' && toElement === 'Water') return 'Thought condenses into feeling and absorption.';
+  if (fromElement === 'Fire' && toElement === 'Water') return 'Heat tempers into emotional depth.';
+  if (fromElement === 'Water' && toElement === 'Fire') return 'Feeling ignites into directed action.';
+  if (fromElement === 'Earth' && toElement === 'Air') return 'Structure loosens into language and motion.';
+  if (fromElement === 'Air' && toElement === 'Earth') return 'Signal grounds into form and implementation.';
+  if (fromElement === 'Fire' && toElement === 'Earth') return 'Impulse refines into discipline and craft.';
+  if (fromElement === 'Earth' && toElement === 'Fire') return 'Material density becomes momentum.';
+  return 'Sensation converts into structure through attention.';
+}
+
+function SidebarLink({ href, icon, children, active = false }) {
+  return (
+    <a
+      href={href}
+      className={`flex items-center gap-3 px-5 py-3 text-[11px] uppercase tracking-[0.18em] transition-colors border-l ${
+        active
+          ? 'bg-paper-dark/40 text-gold border-gold'
+          : 'text-ink-light border-transparent hover:bg-paper-dark/30 hover:text-gold'
+      }`}
+    >
+      <SafeIcon icon={icon} className="text-sm" />
+      <span>{children}</span>
+    </a>
+  );
+}
+
+function StatCard({ label, value, sublabel, icon }) {
+  return (
+    <div className="border border-ink/10 bg-white/70 p-5 space-y-2">
+      <div className="flex items-center justify-between text-ink-light">
+        <p className="text-[9px] uppercase tracking-[0.25em]">{label}</p>
+        <SafeIcon icon={icon} className="text-sm" />
+      </div>
+      <p className="font-serif text-2xl italic text-ink leading-tight">{value}</p>
+      <p className="text-[9px] uppercase tracking-[0.18em] text-ink-light opacity-70">{sublabel}</p>
+    </div>
+  );
+}
+
+function ProtocolArticle({ number, label, title, subtitle, description, details = [], closing, image, reverse = false, metaLeft, metaRight }) {
+  return (
+    <article className="relative mb-16 scroll-mt-28">
+      <div className="absolute -top-4 right-4 md:-top-6 md:-right-6 w-12 h-12 bg-gold text-paper flex items-center justify-center z-10">
+        <span className="font-serif text-lg">{String(number).padStart(2, '0')}</span>
+      </div>
+
+      <div className="grid grid-cols-12 border border-ink/10 bg-white/70 overflow-hidden">
+        <div className={`col-span-12 md:col-span-5 relative min-h-[22rem] ${reverse ? 'md:order-2' : ''}`}>
+          <img src={image} alt={title} className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition duration-700" />
+          <div className="absolute inset-4 border border-white/25 pointer-events-none" />
+        </div>
+
+        <div className={`col-span-12 md:col-span-7 p-8 md:p-10 flex flex-col justify-between ${reverse ? 'md:order-1' : ''}`}>
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.35em] text-gold mb-4">{label}</p>
+            <h3 className="font-serif text-3xl italic text-ink mb-2 leading-tight">{title}</h3>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-ink-light mb-6">{subtitle}</p>
+            <p className="font-serif text-base italic text-ink-light leading-relaxed mb-5">{description}</p>
+
+            {details.length > 0 ? (
+              <div className="grid sm:grid-cols-2 gap-3 mb-5">
+                {details.map((detail) => (
+                  <div key={detail.title} className="border border-ink/10 bg-paper p-3">
+                    <p className="text-[8px] uppercase tracking-[0.22em] text-ink-light mb-1">{detail.title}</p>
+                    <p className="font-serif text-lg italic text-gold leading-tight">{detail.value}</p>
+                    <p className="text-[8px] text-ink-light mt-1 uppercase tracking-[0.16em]">{detail.subtext}</p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            <p className="font-serif text-sm italic text-ink-light leading-relaxed">{closing}</p>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-ink/10 flex items-center justify-between text-ink-light text-[10px] uppercase tracking-[0.18em] gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <SafeIcon icon={FiClock} className="text-sm shrink-0" />
+              <span className="truncate">{metaLeft}</span>
+            </div>
+            <div className="flex items-center gap-2 min-w-0 text-right">
+              <SafeIcon icon={FiMapPin} className="text-sm shrink-0" />
+              <span className="truncate">{metaRight}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function LogCard({ label, icon, children }) {
+  return (
+    <div className="border border-ink/10 bg-white/70 p-5 flex flex-col gap-3">
+      <div className="flex items-center justify-between text-ink-light">
+        <p className="text-[9px] uppercase tracking-[0.25em]">{label}</p>
+        <SafeIcon icon={icon} className="text-sm" />
+      </div>
+      {children}
+    </div>
+  );
 }
 
 export default function WorkbookPage() {
@@ -76,444 +169,273 @@ export default function WorkbookPage() {
   const toElement = inferElement(toSign);
   const metaphor = inferMetaphor(fromElement, toElement);
 
-  const attunements = [
-    {
-      title: 'Dream or signal capture',
-      text: `Record the symbol, lyric, memory, mood, or image that keeps returning as ${fromSign} gives way to ${toSign}. Let repetition reveal the real subject.`
-    },
-    {
-      title: 'Somatic mapping',
-      text: `Track how ${sourceBody.toLowerCase()} shifts when you breathe toward ${destinationBody.toLowerCase()}. Notice where sensation pools, tightens, opens, or travels.`
-    },
-    {
-      title: 'Relational witness',
-      text: `Ask: what am I trying to protect, prove, preserve, or release as this cycle evolves from ${fromSign} into ${toSign}?`
-    },
-  ];
-
-  const transitionCards = [
-    {
-      title: `${fromSign} patterning`,
-      prompt: `Name the dominant state you are moving out of. What has become excessive, sticky, loud, avoidant, or overgrown in the ${fromSign} expression?`,
-      id: 'transition_pattern',
-      lines: 5,
-    },
-    {
-      title: `${toSign} correction`,
-      prompt: `What would a more regulated, skillful, or beautifully contained ${toSign} expression look like in the same situation?`,
-      id: 'transition_correction',
-      lines: 5,
-    },
-    {
-      title: 'Threshold sentence',
-      prompt: `Write one sentence beginning with: “I am learning to move from ___ into ___ without abandoning myself.”`,
-      id: 'transition_threshold',
-      lines: 4,
-    },
-  ];
-
-  const practiceDomains = [
-    {
-      title: 'Physical',
-      icon: FiActivity,
-      prompts: [
-        `What does ${fromSign} feel like in the body when it is overdriving the system?`,
-        `What movement, stretch, pacing, or breath most effectively helps ${destinationBody.toLowerCase()} come online?`,
-      ],
-      ids: ['physical_overdrive', 'physical_regulation'],
-    },
-    {
-      title: 'Emotional',
-      icon: FiDroplet,
-      prompts: [
-        `What feeling keeps trying to become language during this cycle?`,
-        `What feeling softens or organizes once it is given a boundary, container, or honest name?`,
-      ],
-      ids: ['emotional_language', 'emotional_soften'],
-    },
-    {
-      title: 'Relational',
-      icon: FiWind,
-      prompts: [
-        `Where am I over-giving, over-merging, over-performing, or over-defending?`,
-        `What one clearer agreement, statement, or boundary would improve the field immediately?`,
-      ],
-      ids: ['relational_pattern', 'relational_boundary'],
-    },
-  ];
-
   return (
-    <main className="w-full bg-paper min-h-screen selection:bg-gold/30">
-      <div className="pt-20">
-        <FortnightNav vol={vol} />
-      </div>
-
-      <Section className="text-center items-center min-h-[90vh]">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: 'circOut' }}
-          className="relative w-full"
-        >
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 opacity-5 pointer-events-none">
-            <RadiatingCircles className="w-96 h-96" />
-          </div>
-
-          <Label className="mb-10 tracking-[0.35em] opacity-40">
-            Cycle Workbook {String(vol.fortnight).padStart(2, '0')} of 26
-          </Label>
-
-          <Title className="mb-8 leading-[1.1] text-4xl md:text-7xl max-w-5xl mx-auto font-light">
-            {vol.title}
-          </Title>
-
-          <div className="flex items-center justify-center space-x-12 my-16 text-ink">
-            <MoonPhase phase={isWaning ? 'full' : 'new'} className="w-16 h-16 opacity-20" />
-            <div className="h-px w-64 bg-ink/10 relative overflow-hidden">
-              <motion.div
-                className="absolute inset-0 bg-gold"
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-              />
-            </div>
-            <MoonPhase phase={isWaning ? 'new' : 'full'} className="w-16 h-16 text-gold" />
-          </div>
-
-          <Subtitle className="mb-5 text-3xl md:text-4xl">{vol.signs}</Subtitle>
-          <Body className="max-w-3xl mx-auto text-lg md:text-2xl opacity-75">
-            A two-week guided passage from <span className="font-semibold text-ink">{fromSign}</span> into <span className="font-semibold text-ink">{toSign}</span>, moving through the body from <span className="font-semibold text-ink">{sourceBody}</span> toward <span className="font-semibold text-ink">{destinationBody}</span>.
-          </Body>
-          <div className="flex flex-col items-center gap-2 mt-8">
-            <Label className="text-gold">{vol.mechanics.start} to {vol.mechanics.end}</Label>
-            <Label className="text-[10px] opacity-30">Two-week integration arc</Label>
-          </div>
-        </motion.div>
-      </Section>
-
-      <Section className="bg-white/40 border-y border-ink/5">
-        <div className="grid lg:grid-cols-12 gap-16 md:gap-24">
-          <div className="lg:col-span-5 space-y-12">
-            <div className="space-y-5">
-              <div className="flex items-center gap-4 text-gold">
-                <SafeIcon icon={FiCompass} />
-                <Label>Context and framing</Label>
-              </div>
-              <Heading className="text-3xl lowercase italic font-serif tracking-normal">{vol.somatic}</Heading>
-              <Body className="text-lg opacity-75 leading-relaxed">{vol.description}</Body>
-            </div>
-
-            <div className="p-8 bg-paper border border-ink/5 shadow-sm space-y-4">
-              <Label className="opacity-40">Elemental translation</Label>
-              <Heading className="text-sm">{fromElement} → {toElement}</Heading>
-              <Body className="text-base italic text-ink-light">{metaphor}</Body>
-            </div>
-
-            <div className="p-8 bg-paper border border-ink/5 shadow-sm space-y-4">
-              <Label className="opacity-40">Seasonal intelligence</Label>
-              <Heading className="text-sm">{vol.seasonal}</Heading>
-              <Body className="text-base italic text-ink-light">
-                Let the environment teach the method. Notice what in you is ripening, drying out, thawing, consolidating, loosening, or seeking proportion.
-              </Body>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 space-y-8">
-            <div className="relative bg-ink/5 border border-ink/10 p-10 md:p-12 overflow-hidden">
-              <div className="absolute inset-0 opacity-10 pointer-events-none">
-                <RadiatingCircles className="w-full h-full scale-150" />
-              </div>
-              <div className="relative space-y-6">
-                <Label className="text-gold">How to use this workbook</Label>
-                <Body className="text-lg leading-relaxed">
-                  This workbook is built for a two-week span. Week one is for noticing, naming, and mapping the dominant pattern. Week two is for adjustment, practice, and embodied application. Treat the prompts as a living lab, not a questionnaire to rush through.
-                </Body>
-                <Body className="text-lg leading-relaxed">
-                  Use it as a reflective companion, a ritual scaffold, a somatic journal, or a research notebook. What matters is not filling every field. What matters is getting honest enough to watch the cycle change you in real time.
-                </Body>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {attunements.map((item, index) => (
-                <div key={item.title} className="bg-paper border border-ink/5 p-6 space-y-4">
-                  <Label className="text-gold">Attunement {index + 1}</Label>
-                  <Heading className="text-base normal-case tracking-normal font-serif italic">{item.title}</Heading>
-                  <Body className="text-base">{item.text}</Body>
-                </div>
-              ))}
-            </div>
-          </div>
+    <main className="w-full min-h-screen bg-paper text-ink selection:bg-gold/25">
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-72 bg-paper-dark/40 border-r border-ink/10 z-30 print:hidden flex-col pt-24">
+        <div className="px-6 pb-5 border-b border-ink/10">
+          <p className="text-[9px] uppercase tracking-[0.35em] text-ink-light mb-1">Workbook {String(vol.fortnight).padStart(2, '0')}</p>
+          <h2 className="font-serif text-xl italic text-gold leading-tight">Lunar Chaperone</h2>
+          <p className="text-[9px] uppercase tracking-[0.2em] text-ink-light mt-2">{vol.signs}</p>
         </div>
-      </Section>
 
-      <Section>
-        <div className="max-w-5xl mx-auto space-y-20">
-          <header className="text-center space-y-4">
-            <div className="flex justify-center mb-8">
-              <SafeIcon icon={FiLayers} className="text-gold text-3xl" />
-            </div>
-            <Heading>Energy mapping and transition work</Heading>
-            <Body className="text-ink-muted italic max-w-3xl mx-auto">
-              Before you try to improve the cycle, describe it. The first job is to witness the pattern accurately.
-            </Body>
-          </header>
+        <nav className="flex-1 overflow-y-auto py-4">
+          <p className="px-6 mb-2 text-[9px] uppercase tracking-[0.3em] text-ink-light">Navigation</p>
+          <SidebarLink href="#overview" icon={FiHome} active>Overview</SidebarLink>
+          <SidebarLink href="#context" icon={FiCompass}>Context Framing</SidebarLink>
+          <SidebarLink href="#mapping" icon={FiLayers}>Energy Mapping</SidebarLink>
+          <SidebarLink href="#protocols" icon={FiActivity}>Practices &amp; Protocols</SidebarLink>
+          <SidebarLink href="#tracking" icon={FiBookOpen}>Practice Logs</SidebarLink>
+          <SidebarLink href="#synthesis" icon={FiFeather}>Integration</SidebarLink>
 
-          <div className="grid md:grid-cols-2 gap-10">
-            <div className="bg-paper border border-ink/5 p-8 space-y-6">
-              <Label className="text-gold">Field notes</Label>
-              <div>
-                <Body className="text-base mb-4">Where am I over-saturated, over-explaining, over-feeling, overworking, or over-identifying right now?</Body>
-                <JournalArea id="field_oversaturated" volumeId={vol.id} lines={5} />
-              </div>
-              <div>
-                <Body className="text-base mb-4">Where am I under-resourced, under-honest, under-rested, under-defended, or under-supported?</Body>
-                <JournalArea id="field_underresourced" volumeId={vol.id} lines={5} />
-              </div>
-              <div>
-                <Body className="text-base mb-4">What theme, line of thought, dream fragment, or song keeps repeating?</Body>
-                <JournalInput id="field_repetition" volumeId={vol.id} placeholder="The repeating signal..." />
-              </div>
-            </div>
-
-            <div className="bg-white/60 border border-gold/10 p-8 space-y-6">
-              <Label className="text-gold">Axis reflection</Label>
-              <Body className="text-base">
-                Write 150–300 words on what this transition is actually asking of you. Not the fantasy version. The real version.
-              </Body>
-              <JournalArea id="axis_reflection" volumeId={vol.id} lines={11} />
+          <div className="mt-5 mx-4 border-t border-ink/10 pt-4">
+            <p className="px-2 mb-2 text-[9px] uppercase tracking-[0.3em] text-ink-light">Cycle Arc</p>
+            <div className="space-y-1 px-2 text-[10px] uppercase tracking-[0.15em] text-ink-light">
+              <div className="flex items-center justify-between border border-ink/10 px-3 py-2 bg-white/40"><span>Week I</span><span>Witness</span></div>
+              <div className="flex items-center justify-between border border-ink/10 px-3 py-2 bg-white/40"><span>Week II</span><span>Apply</span></div>
             </div>
           </div>
+        </nav>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {transitionCards.map((card) => (
-              <div key={card.id} className="border border-ink/5 bg-paper p-8 space-y-5">
-                <Label className="text-gold">Transition prompt</Label>
-                <Heading className="text-base normal-case tracking-normal font-serif italic">{card.title}</Heading>
-                <Body className="text-base">{card.prompt}</Body>
-                <JournalArea id={card.id} volumeId={vol.id} lines={card.lines} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      <Divider />
-
-      <Section className="bg-ink text-paper py-32 px-8 md:px-16 rounded-[3rem] mx-4 md:mx-10 max-w-none print:bg-transparent print:text-ink print:border print:border-ink">
-        <div className="max-w-6xl mx-auto space-y-20">
-          <header className="text-center space-y-6">
-            <SafeIcon icon={FiActivity} className="text-gold text-3xl mx-auto" />
-            <Heading className="text-paper print:text-ink">Practice domains</Heading>
-            <Body className="text-paper/70 print:text-ink max-w-3xl mx-auto">
-              This section is where insight either gets embodied or stays decorative. Choose the practices that actually alter behavior.
-            </Body>
-          </header>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            {practiceDomains.map((domain) => (
-              <div key={domain.title} className="border border-gold/15 bg-white/5 p-8 space-y-6 print:border-ink/10 print:bg-transparent">
-                <div className="flex items-center gap-4 text-gold">
-                  <SafeIcon icon={domain.icon} />
-                  <Label className="text-gold">{domain.title}</Label>
-                </div>
-                <div>
-                  <Body className="text-paper print:text-ink text-base mb-4">{domain.prompts[0]}</Body>
-                  <JournalArea id={domain.ids[0]} volumeId={vol.id} lines={5} />
-                </div>
-                <div>
-                  <Body className="text-paper print:text-ink text-base mb-4">{domain.prompts[1]}</Body>
-                  <JournalArea id={domain.ids[1]} volumeId={vol.id} lines={5} />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-8 items-start">
-            <div className="space-y-8 border-l border-gold/30 pl-8">
-              <div className="space-y-2">
-                <Label className="text-gold text-[10px]">Protocol 01</Label>
-                <Body className="text-paper print:text-ink">Locate the dominant sensation in the {sourceBody.toLowerCase()}. Breathe behind it rather than trying to overpower it.</Body>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-gold text-[10px]">Protocol 02</Label>
-                <Body className="text-paper print:text-ink">Name the corresponding need in plain language. No poetry until the truth is stable enough to bear it.</Body>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-gold text-[10px]">Protocol 03</Label>
-                <Body className="text-paper print:text-ink">Translate the need into a visible action, agreement, boundary, ask, or ritual. Insight without action is drift.</Body>
-              </div>
-            </div>
-
-            <div className="relative aspect-square flex items-center justify-center">
-              <div className="absolute inset-0 border border-gold/20 rounded-full animate-[spin_60s_linear_infinite]" />
-              <div className="absolute inset-16 border border-gold/10 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
-              <TriangleSymbol className="w-64 h-64 text-gold opacity-50" />
-              <div className="absolute bottom-0 text-center w-full">
-                <Label className="text-gold animate-pulse">Embodiment in progress</Label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      <Section>
-        <div className="max-w-6xl mx-auto space-y-20">
-          <header className="text-center space-y-4">
-            <SafeIcon icon={FiBookOpen} className="text-gold text-3xl mx-auto" />
-            <Heading>Two-week integration plan</Heading>
-            <Body className="text-ink-muted italic max-w-3xl mx-auto">
-              This is a two-week workbook. The structure below matches the actual cycle length instead of pretending it spans a month.
-            </Body>
-          </header>
-
-          <div className="grid lg:grid-cols-2 gap-10">
-            <div className="border border-ink/5 bg-paper p-8 space-y-6">
-              <Label className="text-gold">Week 1 — notice and name</Label>
-              <Body className="text-base">Focus on observation, saturation, pattern recognition, and honest inventory.</Body>
-              <div>
-                <Body className="text-base mb-4">What am I noticing in my body, mood, schedule, relationships, and recurring thoughts?</Body>
-                <JournalArea id="week1_noticing" volumeId={vol.id} lines={6} />
-              </div>
-              <div>
-                <Body className="text-base mb-4">What specifically needs less fuel, less fantasy, less avoidance, or less force?</Body>
-                <JournalArea id="week1_reduce" volumeId={vol.id} lines={6} />
-              </div>
-              <div>
-                <Body className="text-base mb-4">Name one measurable sign that week one is doing its job.</Body>
-                <JournalInput id="week1_measure" volumeId={vol.id} placeholder="A sign of useful movement..." />
-              </div>
-            </div>
-
-            <div className="border border-gold/10 bg-white/60 p-8 space-y-6">
-              <Label className="text-gold">Week 2 — adjust and apply</Label>
-              <Body className="text-base">Focus on clearer action, better phrasing, stronger boundaries, cleaner rituals, and visible behavioral shifts.</Body>
-              <div>
-                <Body className="text-base mb-4">What action, ritual, statement, or agreement best represents the healthier {toSign} expression?</Body>
-                <JournalArea id="week2_action" volumeId={vol.id} lines={6} />
-              </div>
-              <div>
-                <Body className="text-base mb-4">What changed once I stopped feeding the old pattern and started practicing the new one?</Body>
-                <JournalArea id="week2_shift" volumeId={vol.id} lines={6} />
-              </div>
-              <div>
-                <Body className="text-base mb-4">Name one measurable sign that week two produced integration rather than performance.</Body>
-                <JournalInput id="week2_measure" volumeId={vol.id} placeholder="A sign of actual integration..." />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="border border-ink/5 p-8 bg-paper space-y-5">
-              <Label className="text-gold">Daily check-in</Label>
-              <Body className="text-base">Morning: what am I carrying? Evening: what changed once named?</Body>
-              <JournalArea id="daily_checkin" volumeId={vol.id} lines={8} />
-            </div>
-            <div className="border border-ink/5 p-8 bg-paper space-y-5">
-              <Label className="text-gold">Conversation and boundary log</Label>
-              <Body className="text-base">Track the interactions, asks, clarifications, refusals, or acknowledgments that moved this cycle forward.</Body>
-              <JournalArea id="boundary_log" volumeId={vol.id} lines={8} />
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      <Divider />
-
-      <Section>
-        <div className="max-w-6xl mx-auto space-y-20">
-          <header className="text-center space-y-4">
-            <SafeIcon icon={FiFeather} className="text-gold text-3xl mx-auto" />
-            <Heading>Ritual, research, and synthesis</Heading>
-            <Body className="text-ink-muted italic max-w-3xl mx-auto">
-              The workbook can be devotional, practical, academic, or all three. Use the mode that gets results.
-            </Body>
-          </header>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="border border-ink/5 bg-paper p-8 space-y-5">
-              <Label className="text-gold">Ritual script</Label>
-              <Body className="text-base">Design a short rite for moving from {fromSign} into {toSign}. Keep it simple enough to actually repeat.</Body>
-              <JournalArea id="ritual_script" volumeId={vol.id} lines={8} />
-            </div>
-            <div className="border border-ink/5 bg-paper p-8 space-y-5">
-              <Label className="text-gold">Research lens</Label>
-              <Body className="text-base">Choose a lens — somatics, attachment, ritual theory, phenomenology, communication, behavioral design — and describe how it interprets this cycle.</Body>
-              <JournalArea id="research_lens" volumeId={vol.id} lines={8} />
-            </div>
-            <div className="border border-ink/5 bg-paper p-8 space-y-5">
-              <Label className="text-gold">Applied hypothesis</Label>
-              <Body className="text-base">If you repeat one practice across these two weeks, what do you predict will change in mood, body, behavior, or relationships?</Body>
-              <JournalArea id="applied_hypothesis" volumeId={vol.id} lines={8} />
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      <Section className="relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] pointer-events-none">
-          <Title className="text-[20vw] whitespace-nowrap">SYNTHESIS</Title>
-        </div>
-        <div className="relative z-10 max-w-4xl mx-auto bg-white/40 backdrop-blur-sm border border-gold/10 p-12 md:p-24 shadow-2xl space-y-12">
-          <div className="text-center space-y-4">
-            <SafeIcon icon={FiCheckCircle} className="text-gold text-3xl mx-auto" />
-            <Heading>Final integration</Heading>
-            <Body className="max-w-2xl mx-auto text-base md:text-lg">
-              Name what actually changed. Not what sounded beautiful. Not what almost happened. What changed.
-            </Body>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <Label className="mb-4 text-gold">One-sentence synthesis</Label>
-              <JournalArea id="final_synthesis_sentence" volumeId={vol.id} lines={4} />
-            </div>
-            <div>
-              <Label className="mb-4 text-gold">Three-month check-in marker</Label>
-              <JournalArea id="final_marker" volumeId={vol.id} lines={4} />
-            </div>
-          </div>
-
-          <SynthesisRitual volumeId={vol.id} volumeData={vol} />
-        </div>
-      </Section>
-
-      <Section className="text-center items-center pb-32">
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="space-y-20 w-full">
-          <div className="space-y-8">
-            <SafeIcon icon={FiSun} className="w-12 h-12 text-gold mx-auto" />
-            <Label className="opacity-40 tracking-[0.5em]">Closing witness</Label>
-            <Title className="text-2xl md:text-4xl normal-case italic text-ink-light max-w-3xl mx-auto leading-relaxed">
-              “I have tracked the movement from {sourceBody} toward {destinationBody}. I know more now about what this cycle asks of me, and what I will no longer pretend not to know.”
-            </Title>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-16 max-w-2xl mx-auto border-t border-ink/5 pt-16">
-            <div className="text-left space-y-4">
-              <Label className="text-[10px] opacity-40">Signature</Label>
-              <JournalInput id="final_sign" volumeId={vol.id} placeholder="Your name" />
-            </div>
-            <div className="text-left space-y-4">
-              <Label className="text-[10px] opacity-40">Date</Label>
-              <JournalInput id="final_date" volumeId={vol.id} placeholder="Today" />
-            </div>
-          </div>
-
-          <div className="pt-12 opacity-20 hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="group flex flex-col items-center gap-4"
-            >
-              <div className="w-10 h-10 rounded-full border border-ink flex items-center justify-center group-hover:bg-ink group-hover:text-paper transition-all">
-                <SafeIcon icon={FiAnchor} />
-              </div>
-              <Label className="text-[9px]">Back to top</Label>
+        <div className="p-5 border-t border-ink/10 space-y-3">
+          <button className="w-full bg-gold text-paper text-[10px] uppercase tracking-[0.25em] py-3 px-4 hover:opacity-90 transition-colors flex items-center justify-center gap-2">
+            <SafeIcon icon={FiPlayCircle} className="text-sm" />
+            Begin Session
+          </button>
+          <div className="flex gap-3">
+            <button className="flex-1 text-[9px] uppercase tracking-[0.2em] text-ink-light py-2 border border-ink/10 hover:border-gold hover:text-gold transition-colors flex items-center justify-center gap-1">
+              <SafeIcon icon={FiSettings} className="text-xs" />
+              Settings
+            </button>
+            <button className="flex-1 text-[9px] uppercase tracking-[0.2em] text-ink-light py-2 border border-ink/10 hover:border-gold hover:text-gold transition-colors flex items-center justify-center gap-1">
+              <SafeIcon icon={FiHelpCircle} className="text-xs" />
+              Support
             </button>
           </div>
-        </motion.div>
-      </Section>
+        </div>
+      </aside>
 
-      <FortnightNav vol={vol} />
+      <div className="lg:ml-72 pt-20">
+        <header className="sticky top-0 z-20 bg-paper/90 backdrop-blur-sm border-b border-ink/10 h-14 flex items-center px-6 md:px-8 gap-4 print:hidden">
+          <div className="flex items-center gap-2 text-[9px] uppercase tracking-[0.25em] text-ink-light">
+            <span>WB {String(vol.fortnight).padStart(2, '0')}</span>
+            <span className="opacity-40">/</span>
+            <span>{vol.title}</span>
+          </div>
+          <div className="flex-1" />
+          <div className="text-[9px] uppercase tracking-[0.25em] text-ink-light hidden sm:block">{vol.signs}</div>
+        </header>
+
+        <div className="max-w-5xl mx-auto px-6 md:px-8 py-10">
+          <section id="overview" className="mb-12 border-b border-ink/10 pb-8 scroll-mt-28">
+            <div className="flex items-start justify-between flex-wrap gap-4">
+              <div>
+                <p className="text-[9px] uppercase tracking-[0.4em] text-ink-light mb-3">Workbook {String(vol.fortnight).padStart(2, '0')} · Two-Week Cycle</p>
+                <h1 className="font-serif text-5xl font-light italic text-ink leading-none mb-3">{vol.title}</h1>
+                <p className="font-serif text-lg italic text-ink-light leading-relaxed max-w-2xl">
+                  A structured two-week workbook for moving from {fromSign} into {toSign}, translating {fromElement.toLowerCase()} into {toElement.toLowerCase()} through the body from {sourceBody} toward {destinationBody}.
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-1 pt-1">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-ink-light">Cycle Window</p>
+                <p className="font-serif text-2xl italic text-gold">14 Days</p>
+                <p className="text-[8px] uppercase tracking-[0.2em] text-ink-light opacity-70 mt-1">{fromElement} · {sourceBody} → {destinationBody}</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="context" className="mb-14 scroll-mt-28">
+            <div className="grid md:grid-cols-4 gap-4 mb-6">
+              <StatCard label="Lunar Mechanics" value={`${vol.mechanics.start} → ${vol.mechanics.end}`} sublabel="Cycle threshold" icon={FiCompass} />
+              <StatCard label="Somatic Axis" value={`${sourceBody} → ${destinationBody}`} sublabel="Body translation" icon={FiActivity} />
+              <StatCard label="Elemental Shift" value={`${fromElement} → ${toElement}`} sublabel="Energetic movement" icon={FiWind} />
+              <StatCard label="Working Metaphor" value={metaphor} sublabel="Interpretive frame" icon={FiFeather} />
+            </div>
+
+            <div className="border border-ink/10 bg-white/70 p-8 space-y-5">
+              <p className="text-[9px] uppercase tracking-[0.35em] text-gold">Context Framing</p>
+              <Body className="text-base md:text-lg">{vol.description}</Body>
+              <Body className="text-base md:text-lg italic text-ink-light">{vol.seasonal}</Body>
+              <Body className="text-sm md:text-base text-ink-light">{metaphor}</Body>
+            </div>
+          </section>
+
+          <section id="mapping" className="mb-16 scroll-mt-28">
+            <div className="border-b border-ink/10 pb-4 mb-8 flex items-end justify-between">
+              <div>
+                <p className="text-[9px] uppercase tracking-[0.35em] text-ink-light mb-2">Mapping Layer</p>
+                <h2 className="font-serif text-3xl italic text-ink">Energy Mapping</h2>
+              </div>
+              <SafeIcon icon={FiLayers} className="text-xl text-ink-light opacity-40" />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div className="border border-ink/10 bg-white/70 p-6 space-y-5">
+                <Body className="text-base">Where am I over-saturated, over-defended, overextended, or over-identified?</Body>
+                <JournalArea id="field_oversaturated" volumeId={vol.id} lines={5} />
+                <Body className="text-base">Where am I under-resourced, under-honest, under-supported, or under-rested?</Body>
+                <JournalArea id="field_underresourced" volumeId={vol.id} lines={5} />
+              </div>
+              <div className="border border-gold/15 bg-white/70 p-6 space-y-5">
+                <Body className="text-base">What theme, dream fragment, lyric, sensation, memory, or conflict keeps repeating?</Body>
+                <JournalArea id="field_repetition_long" volumeId={vol.id} lines={5} />
+                <Body className="text-base">What does the healthier {toSign} expression look like in plain language, not fantasy language?</Body>
+                <JournalArea id="field_destination_language" volumeId={vol.id} lines={5} />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="border border-ink/10 bg-paper-dark/20 p-6">
+                <Label className="mb-4">Healthy Expression</Label>
+                <List items={['clear agreements', 'reciprocal care', 'articulated need', 'coherent pacing']} className="text-base md:text-lg" />
+              </div>
+              <div className="border border-ink/10 bg-paper-dark/20 p-6">
+                <Label className="mb-4">Excess Expression</Label>
+                <List items={['overwhelm', 'people-pleasing', 'merging for peace', 'suppressed preference']} className="text-base md:text-lg" />
+              </div>
+            </div>
+          </section>
+
+          <section id="protocols" className="mb-16 scroll-mt-28">
+            <div className="border-b border-ink/10 pb-4 mb-8 flex items-end justify-between">
+              <div>
+                <p className="text-[9px] uppercase tracking-[0.35em] text-ink-light mb-2">Protocol Sequence</p>
+                <h2 className="font-serif text-3xl italic text-ink">Practices &amp; Protocols</h2>
+                <p className="text-[9px] uppercase tracking-[0.2em] text-ink-light mt-1 opacity-70">Modular somatic field manual</p>
+              </div>
+              <MoonPhase phase={isWaning ? 'full' : 'new'} className="w-8 h-8 text-ink" />
+            </div>
+
+            <ProtocolArticle
+              number={1}
+              label="Protocol I"
+              title="Axis Breathing"
+              subtitle={`${sourceBody} attunement · measured breath descent`}
+              description={`A paced breath protocol for locating the ${fromSign} pattern in the body without amplifying it. The goal is accurate contact, not performance.`}
+              details={[
+                { title: 'Inhale', value: '4', subtext: 'counts' },
+                { title: 'Hold', value: '4', subtext: 'counts' },
+                { title: 'Exhale', value: '8', subtext: 'counts' },
+                { title: 'Target', value: sourceBody, subtext: 'entry point' },
+              ]}
+              closing={`Direct awareness toward the ${sourceBody.toLowerCase()}. On the exhale, imagine the charge moving toward ${destinationBody.toLowerCase()} with less force and more precision.`}
+              image="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=900&q=80"
+              metaLeft="Duration: 11 min"
+              metaRight="Seated, spine vertical"
+            />
+
+            <ProtocolArticle
+              number={2}
+              label="Protocol II"
+              title="Voice and Boundary Toning"
+              subtitle={`${toSign} language activation · vocal resonance`}
+              description={`Sustained sounding, phrasing, or low-volume vocalization helps translate internal sensation into communicable structure. This is useful when the cycle is asking for clearer agreements.`}
+              details={[
+                { title: 'Tone', value: 'VVVV / HUM', subtext: 'resonant exhale' },
+                { title: 'Duration', value: '14 min', subtext: 'sustained rounds' },
+                { title: 'Function', value: 'Language', subtext: 'boundary support' },
+              ]}
+              closing={`Use the exhale to move from feeling into statement. Try: “I feel… I need… I will… I will not…” and notice where the body tightens or releases.`}
+              image="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=900&q=80"
+              metaLeft="Vocal resonance"
+              metaRight="Standing or supine"
+              reverse
+            />
+
+            <ProtocolArticle
+              number={3}
+              label="Protocol III"
+              title="Descent and Structural Release"
+              subtitle={`${destinationBody} grounding · behavioral integration`}
+              description={`This sequence completes the translation by bringing insight down into actual structure: pacing, posture, schedule, agreements, and embodied follow-through.`}
+              details={[
+                { title: 'Week I', value: 'Witness', subtext: 'pattern inventory' },
+                { title: 'Week II', value: 'Apply', subtext: 'behavioral shift' },
+                { title: 'Method', value: 'Slow', subtext: 'no forcing' },
+                { title: 'Outcome', value: 'Integration', subtext: 'not performance' },
+              ]}
+              closing={`Do not force catharsis. Let the body reveal the level of change it can actually sustain. Durable integration beats dramatic insight every time.`}
+              image="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=900&q=80"
+              metaLeft="Duration: 19 min"
+              metaRight="Floor, chair, or wall support"
+            />
+          </section>
+
+          <section id="tracking" className="mb-16 scroll-mt-28">
+            <div className="border-b border-ink/10 pb-4 mb-8 flex items-end justify-between">
+              <div>
+                <p className="text-[9px] uppercase tracking-[0.35em] text-ink-light mb-2">Session Tracking</p>
+                <h2 className="font-serif text-3xl italic text-ink">Practice Logs</h2>
+                <p className="text-[9px] uppercase tracking-[0.2em] text-ink-light mt-1 opacity-70">N=1 · single-subject protocol record</p>
+              </div>
+              <SafeIcon icon={FiBookOpen} className="text-xl text-ink-light opacity-40" />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+              <LogCard label="Breath Rate" icon={FiWind}>
+                <JournalInput id="log_breath" volumeId={vol.id} placeholder="— BPM" />
+                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Breaths / minute</p>
+              </LogCard>
+              <LogCard label="Heart Rate" icon={FiHeart}>
+                <JournalInput id="log_heart" volumeId={vol.id} placeholder="— BPM" />
+                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Beats / minute</p>
+              </LogCard>
+              <LogCard label="Primary State" icon={FiCompass}>
+                <JournalInput id="log_state" volumeId={vol.id} placeholder="Dormant / resonant / clear" />
+                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Autonomic impression</p>
+              </LogCard>
+              <LogCard label="Somatic Load" icon={FiLayers}>
+                <JournalInput id="log_load" volumeId={vol.id} placeholder="Light / moderate / saturated" />
+                <p className="text-[8px] uppercase tracking-[0.18em] text-ink-light opacity-70">Subjective load index</p>
+              </LogCard>
+            </div>
+
+            <div className="border border-ink/10 bg-white/70 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-[9px] uppercase tracking-[0.3em] text-ink-light mb-1">Phenomenological Observations</p>
+                  <p className="text-[8px] text-ink-light opacity-70 tracking-wide">Document bodily data, emotional weather, relational shifts, and what changed after practice.</p>
+                </div>
+                <SafeIcon icon={FiEdit3} className="text-lg text-ink-light opacity-40" />
+              </div>
+              <JournalArea id="phenomenology_notes" volumeId={vol.id} lines={8} />
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-[8px] uppercase tracking-[0.2em] text-ink-light opacity-50">Ref: LC-{String(vol.fortnight).padStart(2, '0')}-TRACK</p>
+                <button className="text-[9px] uppercase tracking-[0.25em] text-gold border border-gold px-4 py-2 hover:bg-gold hover:text-paper transition-colors flex items-center gap-2">
+                  <SafeIcon icon={FiSave} className="text-xs" />
+                  Commit to Archive
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section id="synthesis" className="mb-8 scroll-mt-28">
+            <div className="border-b border-ink/10 pb-4 mb-8 flex items-end justify-between">
+              <div>
+                <p className="text-[9px] uppercase tracking-[0.35em] text-ink-light mb-2">Final Layer</p>
+                <h2 className="font-serif text-3xl italic text-ink">Integration &amp; Synthesis</h2>
+              </div>
+              <SafeIcon icon={FiCheckCircle} className="text-xl text-ink-light opacity-40" />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="border border-ink/10 bg-white/70 p-6 space-y-4">
+                <Body className="text-base">What changed across these two weeks once the pattern was named and practiced against?</Body>
+                <JournalArea id="integration_change" volumeId={vol.id} lines={6} />
+              </div>
+              <div className="border border-gold/15 bg-white/70 p-6 space-y-4">
+                <Body className="text-base">What is the clearest measurable sign to check again in three months?</Body>
+                <JournalArea id="integration_marker" volumeId={vol.id} lines={6} />
+              </div>
+            </div>
+
+            <div className="relative z-10 max-w-4xl mx-auto bg-white/70 border border-gold/10 p-8 md:p-12 shadow-sm">
+              <SynthesisRitual volumeId={vol.id} volumeData={vol} />
+            </div>
+          </section>
+        </div>
+
+        <FortnightNav vol={vol} />
+      </div>
     </main>
   );
 }
