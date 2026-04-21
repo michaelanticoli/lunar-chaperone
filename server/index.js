@@ -37,7 +37,11 @@ async function synthesizeSpeech(text, cacheKey, voiceSettings) {
   try {
     await access(filepath);
     return { url: `/audio-cache/${filename}`, cached: true };
-  } catch {}
+  } catch (error) {
+    if (error?.code !== 'ENOENT') {
+      throw error;
+    }
+  }
 
   const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}?output_format=mp3_44100_128`, {
     method: 'POST',
